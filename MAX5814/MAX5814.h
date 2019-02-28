@@ -27,7 +27,7 @@
 #endif
 
 /* STM32F4xx */
-#if defined(STM32F4xx) || defined(STM32F4XX)
+#if defined(STM32F4xx) || defined(STM32F4XX) || defined(STM32F4)
 #ifndef STM32F4xx
 #define STM32F4xx
 #endif
@@ -50,54 +50,65 @@
 #include "stm32f7xx_hal.h"
 #endif
 
-#define DAC_ADDRESS 	 			0x00
-#define DAC_WRITE_OPERATION			0x00
-#define DAC_READ_OPERATION			0x01
+#include "stm32f4xx_hal.h"
 
-#define DAC_CMD_CODEn				0x00
-#define DAC_CMD_LOADn				0x10
-#define DAC_CMD_CODEn_LOAD_ALL		0x20
-#define DAC_CMD_CODEn_LOADn			0x30
-#define DAC_CMD_CODE_ALL 			0x80
-#define DAC_CMD_LOAD_ALL 			0x81
-#define DAC_CMD_CODE_ALL_LOAD_ALL	0x82
+#define MAX5814_ADDRESS					0x00
+#define MAX5814_WRITE_OPERATION			0x00
+#define MAX5814_READ_OPERATION			0x01
 
-#define DAC_CMD_POWER				0x40
-#define DAC_CMD_SW_CLEAR			0x50
-#define DAC_CMD_SW_RESET			0x51
-#define DAC_CMD_CONFIG				0x60
-#define DAC_CMD_REF					0x70
+#define MAX5814_CMD_CODEn				0x00
+#define MAX5814_CMD_LOADn				0x10
+#define MAX5814_CMD_CODEn_LOAD_ALL		0x20
+#define MAX5814_CMD_CODEn_LOADn			0x30
+#define MAX5814_CMD_CODE_ALL			0x80
+#define MAX5814_CMD_LOAD_ALL			0x81
+#define MAX5814_CMD_CODE_ALL_LOAD_ALL	0x82
 
-#define DAC_REF_EXT					0x00
-#define DAC_REF_25					0x01
-#define DAC_REF_20					0x02
-#define DAC_REF_41					0x03
-#define DAC_REF_PWR_ON				0x04
+#define MAX5814_CMD_POWER				0x40
+#define MAX5814_CMD_SW_CLEAR			0x50
+#define MAX5814_CMD_SW_RESET			0x51
+#define MAX5814_CMD_CONFIG				0x60
+#define MAX5814_CMD_REF					0x70
 
-#define DAC_OUTPUT_A				0x00
-#define DAC_OUTPUT_B				0x01
-#define DAC_OUTPUT_C				0x02
-#define DAC_OUTPUT_D				0x03
-#define DAC_OUTPUT_ALL				0x04 // or 0x08
+#define MAX5814_REF_EXT					0x00
+#define MAX5814_REF_25					0x01
+#define MAX5814_REF_20					0x02
+#define MAX5814_REF_41					0x03
+#define MAX5814_REF_PWR_ON				0x04
 
-#define DAC_ENABLE_LATCH			0x00
-#define DAC_DISABLE_LATCH			0x01
-#define DAC_SEL_ALL					0x40
-#define DAC_SEL_A 					0x01
-#define DAC_SEL_B					0x02
-#define DAC_SEL_C 					0x04
-#define DAC_SEL_D					0x08
+#define MAX5814_OUTPUT_A				0x00
+#define MAX5814_OUTPUT_B				0x01
+#define MAX5814_OUTPUT_C				0x02
+#define MAX5814_OUTPUT_D				0x03
+#define MAX5814_OUTPUT_ALL				0x04 // or 0x08
 
-void Dac_WriteCommand(uint8_t dacCommand);
-void Dac_ReadCommand(uint8_t *dacData);
-void Dac_Init(I2C_HandleTypeDef *hi2c, uint8_t dacRefSelector);
-void Dac_Code(uint8_t dacSelector, uint16_t dacData);
-void Dac_Load(uint8_t dacSelector, uint16_t dacData);
-void Dac_CodeLoadAll(uint8_t dacSelector, uint16_t dacData);
-void Dac_CodeLoad(uint8_t dacSelector, uint16_t dacData);
-void Dac_CodeAll(uint16_t dacData);
-void Dac_LoadAll(void);
-void Dac_CodeAllLoadAll(uint16_t dacData);
-void DacSetVoltage(uint16_t output);
+#define MAX5814_ENABLE_LATCH			0x00
+#define MAX5814_DISABLE_LATCH			0x01
+#define MAX5814_SEL_ALL					0x40
+#define MAX5814_SEL_A					0x01
+#define MAX5814_SEL_B					0x02
+#define MAX5814_SEL_C					0x04
+#define MAX5814_SEL_D					0x08
+
+typedef struct MAX5814
+{
+	I2C_HandleTypeDef *i2cHandler;
+	uint8_t i2cAddress;
+	uint8_t txBuffer[3];
+	uint8_t rxBuffer[3];
+} MAX5814_Handler_t;
+
+void MAX5814_WriteCommand(MAX5814_Handler_t *dacDevice);
+void MAX5814_ReadCommand(MAX5814_Handler_t *dacDevice);
+void MAX5814_Init(MAX5814_Handler_t *dacDevice, I2C_HandleTypeDef *hi2c, uint8_t dacRefSelector);
+void MAX5814_Config(MAX5814_Handler_t *dacDevice, uint8_t dacLatch, uint8_t dacConfigSelector);
+void MAX5814_Reference(MAX5814_Handler_t *dacDevice, uint8_t dacRefConfig);
+void MAX5814_Code(MAX5814_Handler_t *dacDevice, uint8_t dacSelector, uint16_t dacData);
+void MAX5814_Load(MAX5814_Handler_t *dacDevice, uint8_t dacSelector, uint16_t dacData);
+void MAX5814_CodeLoadAll(MAX5814_Handler_t *dacDevice, uint8_t dacSelector, uint16_t dacData);
+void MAX5814_CodeLoad(MAX5814_Handler_t *dacDevice, uint8_t dacSelector, uint16_t dacData);
+void MAX5814_CodeAll(MAX5814_Handler_t *dacDevice, uint16_t dacData);
+void MAX5814_LoadAll(MAX5814_Handler_t *dacDevice);
+void MAX5814_CodeAllLoadAll(MAX5814_Handler_t *dacDevice, uint16_t dacData);
 
 #endif
